@@ -1,6 +1,8 @@
 var excel = require("excel-stream"); // package to read excel to objects in stream
 const { Transform } = require("stream");
 
+const throttled = false;
+
 function getDestination(req, file, cb) {
   cb(null, "");
 }
@@ -15,7 +17,11 @@ MyCustomStorage.prototype._handleFile = (req, file, cb) => {
     // stream of input file
     file.stream
       // convert excel to object stream
-      .pipe(excel())
+      .pipe(
+        excel({
+          sheetIndex: 0,
+        })
+      )
       //process object stream and return formated object for xlsxWriter
       .pipe(getTransformObject())
   );
@@ -44,9 +50,11 @@ function getTransformObject() {
       // to check current memory usage
       const used = process.memoryUsage().heapUsed / 1024 / 1024;
       // console.log('\033c');
-      console.log(
-        `The script uses approximately ${Math.round(used * 100) / 100} MB`
-      );
+      if (throttled) {
+        console.log(
+          `The script uses approximately ${Math.round(used * 100) / 100} MB`
+        );
+      }
       // records is blank array decalred below
       this.records.push(chunk);
       // batch processing of records
@@ -89,11 +97,15 @@ function getTransformObject() {
 // async function to process data
 function saveDataToDB(array) {
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // here data can be modified
-      resolve(
-        array.map((e) => ({ ...e, id: Math.floor(Math.random() * 10 + 1) }))
-      );
-    }, 10);
+    if (throttled) {
+      setTimeout(() => {
+        // here data can be modified
+        resolve(
+          array.map((e) => ({ ...e, id: Math.floor(Math.random() * 10 + 1) }))
+        );
+      }, 10);
+    } else {
+      resolve(array.map((e) => ({ ...e, id: "New Column Value" })));
+    }
   });
 }

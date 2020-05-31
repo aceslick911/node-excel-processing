@@ -21,6 +21,7 @@
     "express": "^4.16.4",
     "multer": "1.4.1",
     "xlsx-write-stream": "0.0.19",
-    "excel-stream": "https://github.com/riddheshganatra/excel-stream.git"
+    "excel-stream": "https://github.com/riddheshganatra/excel-stream.git",
+    "j": "^0.4.3"
   }
 }

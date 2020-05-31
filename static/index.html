@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Excel Stream</title>
+  </head>
+  <body>
+    <form action="/processExcel" method="POST" enctype="multipart/form-data">
+      <input type="file" value="file" name="file" />
+
+      <input type="button" value="Read" id="readButton" />
+      <textarea value="" id="result"></textarea>
+      <input type="submit" value="Submit" />
+
+      <script language="javascript">
+        document
+          .getElementById("readButton")
+          .addEventListener("click", async (ev) => {
+            let response = await fetch("/info");
+            let responseText = await response.text();
+
+            document.getElementById("result").innerHTML = responseText;
+            ev.preventDefault();
+            return false;
+          });
+      </script>
+    </form>
+  </body>
+</html>
